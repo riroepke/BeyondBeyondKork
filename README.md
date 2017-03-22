@@ -1,4 +1,0 @@
-# BeyondBeyondKork
-# BeyondBeyondKork
-# BeyondBeyondKork
-# BeyondBeyondKork
