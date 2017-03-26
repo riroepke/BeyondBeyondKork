@@ -3,6 +3,10 @@
  *  Project:		Adventure Game Creation Commands
  */
 
+
+// Test Change
+
+
 package commands;
 
 public class Location
