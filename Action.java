@@ -8,6 +8,7 @@ public class Action
 	// ------------------------------------------------------ Private Data Fields
 	private boolean object, objectWithPreposition;
 
+	// ------------------------------------------------------ Constructors
 	public Action(String inputID, boolean object, boolean objectWithPreposition)
 	{	this.inputID = inputID;
 		
@@ -23,14 +24,17 @@ public class Action
 		this.objectWithPreposition = objectWithPreposition;
 	}
 	
-	public boolean takesObject()
+	// ------------------------------------------------------- Get properties
+	public boolean takesObject() // Verb takes an object (2 words)
 	{	return this.object;		
 	}
 	
-	public boolean takesObjectWithPreposition()
-	{	return this.objectWithPreposition;		
+	public boolean takesObjectWithPreposition() // Verb takes an object with
+	{	return this.objectWithPreposition;		// prepositional phrase (4 words)
 	}
 	
+	// ------------------------------------------------------- Other methods
+	// determine whether a String matches this action's ID
 	public boolean matches(String input)
 	{	boolean matchesInput = false;
 		
@@ -39,17 +43,5 @@ public class Action
 	
 		return matchesInput;
 	}
-	
-	public int numberOfArgs()
-	{	int n = 1;
-	
-		if(this.object)
-			n = 2;
-		else if(this.objectWithPreposition)
-			n = 4;
-		
-		return n;
-	}
-	
 
-}
+} // end Action
