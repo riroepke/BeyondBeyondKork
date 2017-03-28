@@ -40,52 +40,52 @@ public class Room
 	 *  connecting path is straight (i.e. Move S undoes Move N)	
 	 */	
 	
-	public void setPathN(Room room) throws InvalidRoomSetException
+	public void setPathN(Room room)
 	{	this.N = room;
 		room.setS(this);
 	}
 	
-	public void setPathNE(Room room) throws InvalidRoomSetException
+	public void setPathNE(Room room)
 	{	this.NE = room;
 		room.setSW(this);
 	}
 	
-	public void setPathE(Room room) throws InvalidRoomSetException
+	public void setPathE(Room room)
 	{	this.E = room;
 		room.setW(this);
 	}
 	
-	public void setPathSE(Room room) throws InvalidRoomSetException
+	public void setPathSE(Room room)
 	{	this.SE = room;
 		room.setNW(this);
 	}
 	
-	public void setPathS(Room room) throws InvalidRoomSetException
+	public void setPathS(Room room)
 	{	this.S = room;
 		room.setN(this);
 	}
 	
-	public void setPathSW(Room room) throws InvalidRoomSetException
+	public void setPathSW(Room room)
 	{	this.SW = room;
 		room.setNE(this);
 	}
 	
-	public void setPathW(Room room) throws InvalidRoomSetException
+	public void setPathW(Room room)
 	{	this.W = room;
 		room.setE(this);			
 	}
 	
-	public void setPathNW(Room room) throws InvalidRoomSetException
+	public void setPathNW(Room room)
 	{	this.NW = room;
 		room.setSE(this);
 	}
 	
-	public void setPathU(Room room) throws InvalidRoomSetException
+	public void setPathU(Room room)
 	{	this.U = room;
 		room.setD(this);
 	}
 	
-	public void setPathD(Room room) throws InvalidRoomSetException
+	public void setPathD(Room room)
 	{	this.D = room;
 		room.setU(this);
 	}
@@ -95,101 +95,101 @@ public class Room
 	 */	
 	
 	/* Direction setter methods */
-	public void setN(Room room)  throws InvalidRoomSetException
+	public void setN(Room room)
 	{	this.N = room;}
-	public void setNE(Room room) throws InvalidRoomSetException
+	public void setNE(Room room)
 	{	this.NE = room;}
-	public void setE(Room room) throws InvalidRoomSetException
+	public void setE(Room room)
 	{	this.E = room;}
-	public void setSE(Room room) throws InvalidRoomSetException
+	public void setSE(Room room)
 	{	this.SE = room;}
-	public void setS(Room room) throws InvalidRoomSetException
+	public void setS(Room room)
 	{	this.S = room;}
-	public void setSW(Room room) throws InvalidRoomSetException
+	public void setSW(Room room)
 	{	this.SW = room;}
-	public void setW(Room room) throws InvalidRoomSetException
+	public void setW(Room room)
 	{	this.W = room;}
-	public void setNW(Room room) throws InvalidRoomSetException
+	public void setNW(Room room)
 	{	this.NW = room;}
-	public void setU(Room room) throws InvalidRoomSetException
+	public void setU(Room room)
 	{	this.U = room;}
-	public void setD(Room room) throws InvalidRoomSetException
+	public void setD(Room room)
 	{	this.D = room;}
 	
 	
 	/*  Remove straight path between two rooms.	 * 
 	 */
-	public void removePathN() throws InvalidRoomRemovalException
+	public void removePathN()
 	{	this.N.S = null;
 		this.N = null;
 	}
 	
-	public void removePathNE() throws InvalidRoomRemovalException
+	public void removePathNE()
 	{	this.NE.SW = null;
 		this.NE = null;
 	}
 	
-	public void removePathE() throws InvalidRoomRemovalException
+	public void removePathE()
 	{	this.E.W = null;
 		this.E = null;
 	}
 	
-	public void removePathSE() throws InvalidRoomRemovalException
+	public void removePathSE()
 	{	this.SE.NW = null;
 		this.SE = null;
 	}
 	
-	public void removePathS() throws InvalidRoomRemovalException
+	public void removePathS()
 	{	this.S.N = null;
 		this.S = null;
 	}
 	
-	public void removePathSW() throws InvalidRoomRemovalException
+	public void removePathSW()
 	{	this.SW.NE = null;
 		this.SW = null;
 	}
 	
-	public void removePathW() throws InvalidRoomRemovalException
+	public void removePathW()
 	{	this.W.E = null;
 		this.W = null;
 	}
 	
-	public void removePathNW() throws InvalidRoomRemovalException
+	public void removePathNW()
 	{	this.NW.SE = null;
 		this.NW = null;
 	}
 	
-	public void removePathU() throws InvalidRoomRemovalException
+	public void removePathU()
 	{	this.U.D = null;
 		this.U = null;
 	}
 	
-	public void removePathD() throws InvalidRoomRemovalException
+	public void removePathD()
 	{	this.D.U = null;
 		this.D = null;
 	}
 	
 	/*	Remove exit from room. (ONE-DIRECTION removal)
 	 */
-	public void removeN() throws InvalidRoomRemovalException
+	public void removeN()
 	{	this.N = null; }
-	public void removeNE() throws InvalidRoomRemovalException
+	public void removeNE()
 	{	this.NE = null; }
-	public void removeE() throws InvalidRoomRemovalException
+	public void removeE()
 	{	this.E = null; }
-	public void removeSE() throws InvalidRoomRemovalException
+	public void removeSE()
 	{	this.SE = null; }
-	public void removeS() throws InvalidRoomRemovalException
+	public void removeS()
 	{	this.S = null; }
-	public void removeSW() throws InvalidRoomRemovalException
+	public void removeSW()
 	{	this.SW = null; }
-	public void removeW() throws InvalidRoomRemovalException
+	public void removeW()
 	{	this.W = null; }
-	public void removeNW() throws InvalidRoomRemovalException
+	public void removeNW()
 	{	this.NW = null; }
-	public void removeU() throws InvalidRoomRemovalException
+	public void removeU()
 	{	this.U = null; }
-	public void removeD() throws InvalidRoomRemovalException
+	public void removeD()
 	{	this.D = null; }
 	
 	/*  Return the room from the exit in a certain direction
@@ -217,7 +217,7 @@ public class Room
 	
 	/*	Place an item in the room
 	 */
-	public boolean putItem(Item item)
+	public boolean addItem(Item item)
 	{	boolean taskCompleted = true;    // Need to check this in future
 		this.items.add(item);
 		return taskCompleted;
@@ -229,6 +229,11 @@ public class Room
 	{	boolean taskCompleted = true;    // Need to check this in future
 		this.items.remove(item);
 		return taskCompleted;
+	}
+	
+	// Retrieve the Rooms description
+	public String getDescription()
+	{	return this.description;
 	}
 	
 } // end Room
