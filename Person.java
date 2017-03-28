@@ -9,7 +9,5 @@ public class Person extends Container
 	public Person(String name, Location location, int maxMass, int mass)
 	{	super(name, location, maxMass, mass);
 		this.health = 100;
-	}
-	
-	
+	}	
 }
