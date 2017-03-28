@@ -68,7 +68,7 @@ public class Item
 	{	return this.mass;
 	}
 	
-	// -------------------------------------------- Other Methods
+	// ----------------------------------------------------------------------- Other Methods
 	// Add a property to an item
 	public void addAction(Action c)
 	{	if(this.hasAction(c) == false)
@@ -89,16 +89,35 @@ public class Item
 		return itemhasAction;
 	}
 	
+	// =============================THIS METHOD MAY NOT BE NEEDED==========================
 	// Retrieve the item's current location
 	public Location getLocation()
 	{	return this.location;
 	}
 	
 	// Change the item's current location
-	public boolean setLocation(Location location) throws InvalidSetValueException
-	{	boolean setSuccessful = true;
+	public void setLocation(Location newLocation)
+	{	Room room;
+		Container container;
+	
+		if(this.location.isRoom())
+		{	room = this.location.getRoom();
+			room.removeItem(this);
+		}
+		else if(this.location.isContainer())
+		{	container = this.location.getContainer();
+			container.removeItem(this);			
+		}
 		
-		return setSuccessful;
+		if(newLocation.isRoom())
+		{	room = newLocation.getRoom();
+			room.addItem(this);
+		}
+		else if(newLocation.isContainer())
+		{	container = newLocation.getContainer();
+			container.addItem(this);
+		}
+	
 	}
 	
 } // end Item
