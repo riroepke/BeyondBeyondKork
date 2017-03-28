@@ -5,24 +5,34 @@ import java.util.ArrayList;
 public class Container extends Item
 {	// ----------------------------------- Data Fields
 	private ArrayList<Item> items = new ArrayList<>();    // list of items in a container
-	private int maxMass;     // maximum mass capacity
+	private int maxCapacity;     // maximum mass capacity
 	
 	// ----------------------------------- Constructors
-	public Container(String itemName, Location location, int maxMass, int mass)
+	public Container(String itemName, Location location, int mass, int maxCapacity)
 	{	super(itemName, location, mass);
-		this.maxMass = maxMass;
+		this.maxCapacity = maxCapacity;
 	}
 	
-	public Container(String itemName, Location location, int maxMass, int mass, String description)
+	public Container(String itemName, Location location, int mass, int maxCapacity, String description)
 	{	super(itemName, location, mass, description);
-		this.maxMass = maxMass;
+		this.maxCapacity = maxCapacity;
+	}
+	
+	public Container(String itemName, String altItemName, Location location, int mass, int maxCapacity)
+	{	super(itemName, altItemName, location, mass);
+		this.maxCapacity = maxCapacity;
+	}
+	
+	public Container(String itemName, String altItemName, Location location, int mass, int maxCapacity, String description)
+	{	super(itemName, altItemName, location, mass, description);
+		this.maxCapacity = maxCapacity;
 	}
 	
 	// ----------------------------------- Getters & Setters
 	public boolean addItem(Item newItem)
 	{	boolean itemAdded = false;
 	
-		if(super.mass + newItem.getMass() <= this.maxMass)
+		if(super.mass + newItem.getMass() <= this.maxCapacity)
 		{	super.mass += newItem.getMass();
 			this.items.add(newItem);
 			itemAdded = true;
@@ -43,23 +53,17 @@ public class Container extends Item
 	}
 	
 	public int getMaxMass()
-	{	return this.maxMass;
+	{	return this.maxCapacity;
 	}
 	
 	public void setMaxMass(int mass) throws NegativeMassException
 	{	if(mass >= 0)
-			this.maxMass = mass;
+			this.maxCapacity = mass;
 	else
 		throw new NegativeMassException();		
 	}
 	
 	public ArrayList<Item> getItems()
 	{	return this.items;		
-	}
-	
-	// Override current location getter method
-	@Override
-	public Location getLocation()
-	{	return this.location;
-	}
-}
+	}	
+} // end Container
