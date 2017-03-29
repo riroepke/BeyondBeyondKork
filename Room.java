@@ -236,4 +236,14 @@ public class Room
 	{	return this.description;
 	}
 	
+	// Get Descriptions of Items as a list
+	public String getItemDescriptions()
+	{	String listAsString = null;
+		
+		for(int i = 0; i < items.size(); i++)
+			listAsString += items.get(i).getNameWithArticle() + " is here\n";
+		
+		return listAsString;
+	}
+	
 } // end Room
