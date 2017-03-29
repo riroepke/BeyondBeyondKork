@@ -9,9 +9,11 @@ public class Item
 	protected String description;
 	protected Location location;
 	
-	// Item actionList
-	protected ArrayList<Action> actionList = new ArrayList<>();
+	// Item properties
+	protected ArrayList<Action> actionList = new ArrayList<>(); // actions that can be performed on item
 	protected int mass;
+	protected boolean plural = false;
+	protected boolean startsWithVowel;
 	
 	// -------------------------------------------- Constructors
 	public Item(String itemName, Location location, int mass)
@@ -48,6 +50,21 @@ public class Item
 	{	return this.itemName;
 	}
 	
+	public String getNameWithArticle()
+	{	String nameWithArticle = "a";  // both "a" and "an" begin with 'a'
+		char firstLetter = this.itemName.charAt(0); // get first letter in name
+	
+		// add 'n' if firstLetter is a vowel
+		if(firstLetter == 'a' || firstLetter == 'e' || firstLetter == 'i'
+				|| firstLetter == 'o' || firstLetter == 'u')
+			nameWithArticle += "n";
+		
+		// add the item name to return String
+		nameWithArticle += " " + this.itemName;
+	
+		return nameWithArticle;
+	}
+	
 	public String getAltName()
 	{	return this.altItemName;		
 	}
@@ -66,6 +83,10 @@ public class Item
 	
 	public int getMass()
 	{	return this.mass;
+	}
+	
+	public void setPlural(boolean plural)
+	{	this.plural = plural;		
 	}
 	
 	// ----------------------------------------------------------------------- Other Methods
@@ -87,6 +108,11 @@ public class Item
 		if(actionList.contains(c))
 			itemhasAction = true;
 		return itemhasAction;
+	}
+	
+	// Determine whether the item is plural
+	public boolean isPlural()
+	{	return this.plural;		
 	}
 	
 	// =============================THIS METHOD MAY NOT BE NEEDED==========================
