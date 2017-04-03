@@ -2,11 +2,10 @@ package commands;
 
 import java.util.ArrayList;
 
-public class Item
+public class Item implements Constants
 {	// --------------------------------------------- Data Fields
-	protected String itemName;
-	protected String altItemName;
-	protected String description;
+	protected String itemName, altItemName;
+	protected String outsideDescription;
 	protected Location location;
 	
 	// Item properties
@@ -21,9 +20,9 @@ public class Item
 		this.mass = mass;
 	}
 	
-	public Item(String itemName, Location location, int mass, String description)
+	public Item(String itemName, Location location, int mass, String outsideDescription)
 	{	this(itemName, location, mass);
-		this.description = description;
+		this.outsideDescription = outsideDescription;
 	}
 	
 	public Item(String itemName, String altItemName, Location location, int mass)
@@ -31,8 +30,8 @@ public class Item
 		this.altItemName  = altItemName;
 	}
 	
-	public Item(String itemName, String altItemName, Location location, int mass, String description)
-	{	this(itemName, location, mass, description);
+	public Item(String itemName, String altItemName, Location location, int mass, String outsideDescription)
+	{	this(itemName, location, mass, outsideDescription);
 		this.altItemName = altItemName;
 	}
 	
@@ -69,12 +68,12 @@ public class Item
 	{	return this.altItemName;		
 	}
 	
-	public void setDescription(String description)
-	{	this.description = description;		
+	public void setOutsideDescription(String outsideDescription)
+	{	this.outsideDescription = outsideDescription;		
 	}
 	
-	public String getDescription()
-	{	return this.description;		
+	public String getOutsideDescription()
+	{	return this.outsideDescription;		
 	}
 	
 	public void setMass(int mass)
@@ -91,15 +90,17 @@ public class Item
 	
 	// ----------------------------------------------------------------------- Other Methods
 	// Add a property to an item
-	public void addAction(Action c)
-	{	if(this.hasAction(c) == false)
-			actionList.add(c);		
+	public void addActions(Action... c)
+	{	for(Action action: c)
+			if(this.hasAction(action) == false)
+				actionList.add(action);		
 	}
 	
 	// Remove an existing property
-	public void removeAction(Action c)
-	{	if(this.hasAction(c) == true)
-			actionList.remove(c);		
+	public void removeActions(Action... c)
+	{	for(Action action: c)
+			if(this.hasAction(action) == true)
+				actionList.remove(action);		
 	}
 	
 	// Determine whether item has a property
