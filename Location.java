@@ -41,5 +41,38 @@ public class Location
 	{	return (Container)location;		
 	}
 	
+	// ========================================== Get description for either Room or Container
+	public String getInsideDescription()
+	{	String message = null;
+		
+		if(this.isRoom())
+			message = this.getRoom().getInsideDescription();
+		else if(this.isContainer())
+			message = this.getContainer().getInsideDescription();
+		
+		return message;
+	}
+	
+	public String getOutsideDescription()
+	{	String message = null;
+		
+		if(this.isRoom())
+			message = this.getRoom().getOutsideDescription();
+		else if(this.isContainer())
+			message = this.getContainer().getOutsideDescription();
+		
+		return message;
+	}
+	
+	public String getItemDescriptions()
+	{	String itemDescriptions = null;
+		if(this.isRoom())
+			itemDescriptions = this.getRoom().getItemDescriptions();
+		else
+			itemDescriptions = this.getContainer().getItemDescriptions();
+		
+		return itemDescriptions;
+	}
+	
 } // end Location
 
