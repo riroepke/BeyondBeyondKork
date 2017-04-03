@@ -4,8 +4,9 @@ import java.util.ArrayList;
 
 public class Container extends Item
 {	// ----------------------------------- Data Fields
-	private ArrayList<Item> items = new ArrayList<>();    // list of items in a container
-	private int maxCapacity;     // maximum mass capacity
+	protected ArrayList<Item> items = new ArrayList<>();    // list of items in a container
+	protected int maxCapacity;     // maximum mass capacity
+	protected String insideDescription;
 	
 	// ----------------------------------- Constructors
 	public Container(String itemName, Location location, int mass, int maxCapacity)
@@ -13,9 +14,10 @@ public class Container extends Item
 		this.maxCapacity = maxCapacity;
 	}
 	
-	public Container(String itemName, Location location, int mass, int maxCapacity, String description)
-	{	super(itemName, location, mass, description);
+	public Container(String itemName, Location location, int mass, int maxCapacity, String outsideDescription, String insideDescription)
+	{	super(itemName, location, mass, outsideDescription);
 		this.maxCapacity = maxCapacity;
+		this.insideDescription = insideDescription;
 	}
 	
 	public Container(String itemName, String altItemName, Location location, int mass, int maxCapacity)
@@ -23,9 +25,10 @@ public class Container extends Item
 		this.maxCapacity = maxCapacity;
 	}
 	
-	public Container(String itemName, String altItemName, Location location, int mass, int maxCapacity, String description)
-	{	super(itemName, altItemName, location, mass, description);
+	public Container(String itemName, String altItemName, Location location, int mass, int maxCapacity, String outsideDescription, String insideDescription)
+	{	super(itemName, altItemName, location, mass, outsideDescription);
 		this.maxCapacity = maxCapacity;
+		this.insideDescription = insideDescription;
 	}
 	
 	// ----------------------------------- Getters & Setters
@@ -65,5 +68,23 @@ public class Container extends Item
 	
 	public ArrayList<Item> getItems()
 	{	return this.items;		
-	}	
+	}
+	
+	public String getInsideDescription()
+	{	return this.insideDescription;
+	}
+	
+	public String getItemDescriptions()
+	{	String listAsString = null;
+		String beingVerb = " is";
+		
+		for(int i = 0; i < items.size(); i++)
+		{	// Check whether item is singular or plural
+			if(items.get(i).isPlural())
+				beingVerb = " are";
+			listAsString += items.get(i).getNameWithArticle() + beingVerb + " here\n";
+		}
+		
+		return listAsString;
+	}
 } // end Container
