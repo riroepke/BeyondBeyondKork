@@ -10,7 +10,7 @@ import java.util.ArrayList;
 public class Room
 {	// --------------------------------------------------- Data Fields
 	private Room N, NE, E, SE, S, SW, W, NW, U, D; // Rooms in every direction
-	private String roomName, description;
+	private String roomName, insideDescription, outsideDescription;
 	private ArrayList<Item> items;
 
 	// --------------------------------------------------- Constructors
@@ -19,9 +19,10 @@ public class Room
 		this.items = new ArrayList<>();
 	}
 	
-	public Room(String roomName, String description)
+	public Room(String roomName, String insideDescription, String outsideDescription)
 	{	this(roomName);
-		this.description = description;		
+		this.insideDescription = insideDescription;
+		this.outsideDescription = outsideDescription;
 	}
 	
 	// --------------------------------------------------- Getters
@@ -192,8 +193,7 @@ public class Room
 	public void removeD()
 	{	this.D = null; }
 	
-	/*  Return the room from the exit in a certain direction
-	 */
+	/*  Return the room from the exit in a certain direction */
 	public Room getN()
 	{	return this.N; }
 	public Room getNE()
@@ -215,33 +215,53 @@ public class Room
 	public Room getD()
 	{	return this.D; }
 	
-	/*	Place an item in the room
-	 */
+	/*	Place an item in the room */
 	public boolean addItem(Item item)
 	{	boolean taskCompleted = true;    // Need to check this in future
 		this.items.add(item);
 		return taskCompleted;
 	}
 	
-	/*	Remove item from the room
-	 */
+	/*	Remove item from the room */
 	public boolean removeItem(Item item)
 	{	boolean taskCompleted = true;    // Need to check this in future
 		this.items.remove(item);
 		return taskCompleted;
 	}
 	
-	// Retrieve the Rooms description
-	public String getDescription()
-	{	return this.description;
+	// ========================================= Description Setters
+	// Set description of Room from the inside
+	public void setInsideDescription(String insideDescription)
+	{	this.insideDescription = insideDescription;		
+	}
+	
+	// Set description of Room from the outside
+	public void setOutsideDescription(String outsideDescription)
+	{	this.outsideDescription = outsideDescription;		
+	}
+	
+	// ========================================= Description Getters
+	// Retrieve the Room'ss description as seen from the inside
+	public String getInsideDescription()
+	{	return this.insideDescription;
+	}
+	
+	// Retrieve the Room's description as seen from the outside
+	public String getOutsideDescription()
+	{	return this.outsideDescription;
 	}
 	
 	// Get Descriptions of Items as a list
 	public String getItemDescriptions()
 	{	String listAsString = null;
+		String beingVerb = " is";
 		
 		for(int i = 0; i < items.size(); i++)
-			listAsString += items.get(i).getNameWithArticle() + " is here\n";
+		{	// Check whether item is singular or plural
+			if(items.get(i).isPlural())
+				beingVerb = " are";
+			listAsString += items.get(i).getNameWithArticle() + beingVerb + " here\n";
+		}
 		
 		return listAsString;
 	}
