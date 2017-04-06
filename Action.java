@@ -2,13 +2,17 @@ package commands;
 
 public class Action
 {	// ------------------------------------------------------ Data Fields Visible to Subclasses
-	protected String inputID;
-	protected String altInputID;
+	protected String inputID;    // identification string
+	protected String altInputID; // alternate identification string
+								 // (e.i. inputID = "telephone"; altInputID = "phone")
 	
 	// ------------------------------------------------------ Private Data Fields
-	private boolean object, objectWithPreposition;
+	private boolean object;                // Determines whether or not action requires object
+	private boolean objectWithPreposition; // Determines whether or not action requires object
+	                                       //     and prepositional phrase
 
 	// ------------------------------------------------------ Constructors
+	// Only one identification strings
 	public Action(String inputID, boolean object, boolean objectWithPreposition)
 	{	this.inputID = inputID;
 		
@@ -16,6 +20,7 @@ public class Action
 		this.objectWithPreposition = objectWithPreposition;
 	}
 	
+	// Two possible identification strings
 	public Action(String inputID, String altInputID, boolean object, boolean objectWithPreposition)
 	{	this.inputID = inputID;
 		this.altInputID = altInputID;
