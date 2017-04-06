@@ -15,7 +15,7 @@ public class Container extends Item
 	private Item key;                                         // key item
 	private ArrayList<Action> keyActions = new ArrayList<>(); // list of actions done to unlock a box
 	
-	// ----------------------------------- Constructors
+	// ------------------------------------------------------- Constructors
 	public Container(String itemName, Location location, int mass, int maxCapacity)
 	{	super(itemName, location, mass);
 		this.maxCapacity = maxCapacity;
@@ -38,14 +38,16 @@ public class Container extends Item
 		this.insideDescription = insideDescription;
 	}
 	
-	// ----------------------------------- Getters & Setters
+	// ------------------------------------------------------- Getters & Setters
+	// 
 	public boolean addItem(Item newItem)
 	{	boolean itemAdded = false;
 	
 		if(super.mass + newItem.getMass() <= this.maxCapacity) // Ensure that Container can hold item
-		{	this.massContained += newItem.getMass();
-			this.items.add(newItem);
-			itemAdded = true;
+		{	this.massContained += newItem.getMass();           // Add mass of added Item to Container
+			this.items.add(newItem);                           // Add new Item to Container
+			newItem.setLocation(new Location(this));           // Set location of Item to current Container
+			itemAdded = true;                                  // Indicate successful add
 		}
 		
 		return itemAdded;
@@ -54,28 +56,31 @@ public class Container extends Item
 	public boolean removeItem(Item item)
 	{	boolean itemRemoved = false;
 	
-		if(this.items.contains(item)) // Make sure that the Container is holding the item
-		{	this.massContained -= item.getMass();
-			this.items.remove(item);
-			itemRemoved = true;
+		if(this.items.contains(item))             // Make sure that the Container is holding the item
+		{	this.massContained -= item.getMass(); // Remove mass of Item to be Removed from Container
+			this.items.remove(item);              // Remove item from list of container's items
+			item.setLocation(null);               // Set item's location to null
+			itemRemoved = true;                   // Indicate Item's successful removal
 		}
 		return itemRemoved;
 	}
 	
+	// Get the maximum mass the container can hold
 	public int getMaxMass()
 	{	return this.maxCapacity;
 	}
 	
+	// Set the maximum mass the container can hold
 	public void setMaxMass(int mass) throws NegativeMassException
-	{	if(mass >= 0)
+	{	if(mass >= 0) // Ensure maxCapacity is not negative
 			this.maxCapacity = mass;
 	else
 		throw new NegativeMassException();		
 	}
 	
+	// Get the current mass the container is holding
 	public int getMassContained()
 	{	return this.massContained;
-		
 	}
 	
 	
@@ -92,12 +97,14 @@ public class Container extends Item
 	// Description of items in list form (one per line) with articles included
 	public String getItemDescriptions()
 	{	String listAsString = null;
-		String beingVerb = " is";
+		String beingVerb = " is";   // Being verb (default: singular)
 		
 		for(int i = 0; i < items.size(); i++)
 		{	// Check whether item is singular or plural
-			if(items.get(i).isPlural())
-				beingVerb = " are";
+			if(items.get(i).isPlural()) // Check whether item is plural
+				beingVerb = " are";     // Set being verb for plural item
+			
+			// Add item with article and verb to list of items
 			listAsString += items.get(i).getNameWithArticle() + beingVerb + " here\n";
 		}
 		
@@ -105,44 +112,50 @@ public class Container extends Item
 	}
 	
 	// ---------------------------------------- Open or Close the Container
+	// Lock the container with a key and list of actions that must be performed with that key
 	public void lock(Item key, Action... actionList)
 	{	if(this.canOpen == true)  // Box cannot be opened until actions are completed with key
 			this.canOpen = false;
 	
-		for(Action action: actionList)
-			if(this.keyActions.contains(action) == false)
+		for(Action action: actionList) // Add times in actionList to keyActions
+			if(this.keyActions.contains(action) == false) // Make sure keyActions does not already contain action
 				this.keyActions.add(action);
 	}
 	
+	// Unlock the container
 	public void unlock()     // Conditions for unlocking handled in Game class
 	{	this.canOpen = true;		
 	}
 	
+	// Allow the player to close the container
 	public boolean canClose()
 	{	return this.canClose;		
 	}
 	
+	// Allow the player to open the container (no key needed)
 	public boolean canOpen()
 	{	return this.canOpen;		
 	}
 	
+	// Check whether the container is closed
 	public boolean isClosed()
 	{	return this.closed;		
 	}
 	
+	// Close the container
 	public String close()
 	{	String message = null;
-		if(this.canClose())
-		{	if(this.isClosed() == false)
+		if(this.canClose()) // ----------------- Make sure closing is permitted
+		{	if(this.isClosed() == false) // ------------- Make sure the container is not already closed
 			{	this.closed = true;
 			
-				// Ensure proper grammar
+				// Ensure proper grammar ("The box has been closed" verses "The boxes have been closed")
 				String verb = " has";
-				if(this.isPlural())
+				if(this.isPlural())   // Check for plural item (i.e. "boxes")
 					verb = " have";
 				message = "The " + this.itemName + verb + " been closed\n";
 			}
-			else
+			else // ------------------------------------- The box is already closed. Tell player this
 			{	// Ensure proper grammar
 				String verb = " is";
 				if(this.isPlural())
@@ -150,14 +163,14 @@ public class Container extends Item
 				message = "The " + this.itemName + verb + " already closed\n";
 			}
 		}
-		else
+		else // -------------------------------- Notify player that closing the container is not permitted
 			message = "You cannot close that!";
 		return message;
 	}
 	
 	public String open()
 	{	String message = null;
-		
+		// IMPLEMENT
 		return message;		
 	}
 } // end Container
