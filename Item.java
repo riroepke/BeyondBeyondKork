@@ -1,8 +1,8 @@
-package commands;
+package Commands;
 
 import java.util.ArrayList;
 
-public class Item implements Constants
+public class Item 
 {	// --------------------------------------------- Data Fields
 	protected String itemName, altItemName;
 	protected String outsideDescription;
@@ -88,6 +88,12 @@ public class Item implements Constants
 	{	this.plural = plural;		
 	}
 	
+	//returns the full description of the item
+	public String getFullItemDescription()
+	{
+		String description = "Name: "+ this.getName()+ " Mass: " + this.getMass()+" Description: " + this.getOutsideDescription();
+		return description;
+	}
 	// ----------------------------------------------------------------------- Other Methods
 	// Add a property to an item
 	public void addActions(Action... c)
@@ -146,5 +152,7 @@ public class Item implements Constants
 		}
 	
 	}
+	
+	
 	
 } // end Item
