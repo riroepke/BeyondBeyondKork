@@ -17,6 +17,7 @@ import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 import javafx.scene.text.Text;
 import javafx.scene.text.FontPosture;
+import javafx.geometry.Pos;
 
 public class FxClassForThisGame extends Application {
 
@@ -66,26 +67,39 @@ public class FxClassForThisGame extends Application {
 				TextField consule = new TextField();
 				consule.appendText(welcomeMessage);
 				//set the min and max width and height for the consule textbox
-				consule.setPrefSize(600,500);
+				consule.setPrefSize(600,400);
 				//the consule will not be editable for the user
 				consule.setEditable(false);
+				//make the possition to the top left
+				consule.setAlignment(Pos.TOP_LEFT);
 				
 				//create text box for the user inputs
 				TextField userInput = new TextField();
 				//the userinput will be editable
 				userInput.setEditable(true);
 				//set the size of the textbox
-				userInput.setPrefSize(600,200);
+				userInput.setPrefSize(200,200);
 				//let the text be editable
 				userInput.setEditable(true);
+				//SET THE POSITION to be top left
+				userInput.setAlignment(Pos.TOP_LEFT);
 				
 				//add the text fields to the vbox lvbox
 				//tHBox.getChildren().add(consule);
 				bhBox.getChildren().add(consule);
 				bhBox.getChildren().add(userInput);
 				
-				//add a set on the action for the 
-				userInput.setOnAction(e->{});
+				//add a set on the action for when the user preses enter in the userInput textField
+				userInput.setOnAction(e->
+				{
+					
+					//save the lines that are already in the consule
+					String con = consule.getText();
+					//saves the userInput gy getting the text
+					String input = userInput.getText();
+					consule.setText(con + "\r\n" + input);
+					
+				});
 				//tHBox.getChildren().add(userInput);
 				return bhBox;
 			}
@@ -104,7 +118,7 @@ public class FxClassForThisGame extends Application {
 				ImageView mapPic = new ImageView(new Image("file:Images/Mappic.png"));
 				//change the dimensions of the image
 				mapPic.setFitHeight(800/2);
-				mapPic.setFitWidth(800/4);
+				mapPic.setFitWidth(800/2);
 				rvBox.getChildren().add(mapPic);
 				//make a label to go over the items
 				Label itemHeader = new Label("Item List :");
