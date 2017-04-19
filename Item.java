@@ -1,22 +1,25 @@
-package Commands;
+package commands;
 
 import java.util.ArrayList;
 
-public class Item 
+public class Item implements Constants
 {	// --------------------------------------------- Data Fields
 	protected String itemName, altItemName;
 	protected String outsideDescription;
+	protected String itemDescription;
+	protected String details;
 	protected Location location;
 	
 	// Item properties
 	protected ArrayList<Action> actionList = new ArrayList<>(); // actions that can be performed on item
-	protected int mass;
-	protected boolean plural = false;
-	protected boolean startsWithVowel;
+	protected int mass;                                         // mass of item
+	protected boolean plural = false;                           // item is singular or plural (default singular)
+	protected boolean startsWithVowel;                          // item starts with vowel
 	
 	// -------------------------------------------- Constructors
 	public Item(String itemName, Location location, int mass)
 	{	this.itemName = itemName;
+		this.location = location;
 		this.mass = mass;
 	}
 	
@@ -33,6 +36,11 @@ public class Item
 	public Item(String itemName, String altItemName, Location location, int mass, String outsideDescription)
 	{	this(itemName, location, mass, outsideDescription);
 		this.altItemName = altItemName;
+	}
+	
+	public Item(String itemName, String altItemName, Location location, int mass, String outsideDescription, String details)
+	{	this(itemName, altItemName, location, mass, outsideDescription);
+		this.details = details;
 	}
 	
 	// -------------------------------------------- Getter & Setters
@@ -68,6 +76,14 @@ public class Item
 	{	return this.altItemName;		
 	}
 	
+	// Determine whether name of item matches name given by player
+	public boolean matches(String inputID)
+	{	inputID = inputID.trim().toLowerCase();
+		return (inputID.equals(this.getName()) || inputID.equals(this.getAltName()));		
+	}
+	
+	// ============================================================ Description Getters & Setters
+	// --------------------- Outside Description
 	public void setOutsideDescription(String outsideDescription)
 	{	this.outsideDescription = outsideDescription;		
 	}
@@ -76,6 +92,26 @@ public class Item
 	{	return this.outsideDescription;		
 	}
 	
+	// --------------------- Item Description (used when listing items in a room)
+	public void setItemDescription(String itemDescription)
+	{	this.itemDescription = itemDescription;		
+	}
+	
+	public String getItemDescription()
+	{	return this.itemDescription;
+	}
+	
+	// --------------------- Details (used when "examining" items)
+	public void setDetails(String details)
+	{	this.details = details;		
+	}
+	
+	public String getDetails()
+	{	return this.details;
+	}
+	
+	
+	// ============================================== Mass Getters & Setters
 	public void setMass(int mass)
 	{	this.mass = mass;
 	}
@@ -84,16 +120,17 @@ public class Item
 	{	return this.mass;
 	}
 	
+    // ============================================== Change item to a plural item
 	public void setPlural(boolean plural)
 	{	this.plural = plural;		
 	}
 	
-	//returns the full description of the item
-	public String getFullItemDescription()
-	{
-		String description = "Name: "+ this.getName()+ " Mass: " + this.getMass()+" Description: " + this.getOutsideDescription();
-		return description;
+	// Determine whether the item is plural
+	public boolean isPlural()
+	{	return this.plural;		
 	}
+	
+	
 	// ----------------------------------------------------------------------- Other Methods
 	// Add a property to an item
 	public void addActions(Action... c)
@@ -109,20 +146,25 @@ public class Item
 				actionList.remove(action);		
 	}
 	
-	// Determine whether item has a property
+	// Determine whether an action can be performed on an item
 	public boolean hasAction(Action c)
-	{	boolean itemhasAction = false;
+	{	boolean itemHasAction = false;
 		if(actionList.contains(c))
-			itemhasAction = true;
-		return itemhasAction;
+			itemHasAction = true;
+		return itemHasAction;
 	}
 	
-	// Determine whether the item is plural
-	public boolean isPlural()
-	{	return this.plural;		
+	// Determine whether an action can be performed on an item given the action's name
+	public boolean hasAction(String actionID)
+	{	boolean itemHasAction = false;
+		
+		for(int i = 0; !itemHasAction && i < this.actionList.size(); i++)
+			if(this.actionList.get(i).matches(actionID))
+				itemHasAction = true;
+	
+		return itemHasAction;
 	}
 	
-	// =============================THIS METHOD MAY NOT BE NEEDED==========================
 	// Retrieve the item's current location
 	public Location getLocation()
 	{	return this.location;
@@ -150,9 +192,30 @@ public class Item
 		{	container = newLocation.getContainer();
 			container.addItem(this);
 		}
-	
 	}
 	
+	// ===================================================== Actions performed on Items
+	// Move an item
+	public String move(String result)
+	{	String message = null;
+		
+		if(this.hasAction("move")) // Make sure the item can be moved
+			message = Definitions.MOVED(this.itemName, result);
+		else
+			message = Definitions.CANNOT_MOVE_ITEM;
+		
+		return message;		
+	}
 	
+	public String swing(String result)
+	{	String message = null;
 	
+		if(this.hasAction("swing")) // Make sure the item can be swung
+			message = Definitions.SWING(this.itemName, result);
+		else
+			message = Definitions.SARCASTIC_CHALLENGE;
+		
+		return message;
+		
+	}
 } // end Item
