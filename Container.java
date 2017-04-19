@@ -5,6 +5,7 @@ import java.util.ArrayList;
 public class Container extends Item
 {	// ----------------------------------- Data Fields
 	protected ArrayList<Item> items = new ArrayList<>();  // list of items in a container
+	
 	protected int maxCapacity;                            // maximum mass capacity
 	protected int massContained = 0;                      // current mass the Container is holding
 	protected String insideDescription;                   // description of Container's interior
@@ -42,12 +43,18 @@ public class Container extends Item
 	// 
 	public boolean addItem(Item newItem)
 	{	boolean itemAdded = false;
-	
-		if(super.mass + newItem.getMass() <= this.maxCapacity) // Ensure that Container can hold item
-		{	this.massContained += newItem.getMass();           // Add mass of added Item to Container
-			this.items.add(newItem);                           // Add new Item to Container
-			newItem.setLocation(new Location(this));           // Set location of Item to current Container
-			itemAdded = true;                                  // Indicate successful add
+		int currentMassHeld = 0;
+		
+		// ------- Calculate Current mass held in the Container
+		for(int i = 0; i < this.items.size(); i++)
+			currentMassHeld += this.items.get(i).getMass();
+		
+		// ------- Add item to container
+		if(currentMassHeld + newItem.getMass() <= this.maxCapacity) // Ensure that Container can hold item
+		{	this.massContained += newItem.getMass();                // Add mass of added Item to Container
+			this.items.add(newItem);                           		// Add new Item to Container
+			newItem.location = new Location(this);             		// Set location of Item to current Container
+			itemAdded = true;                                  		// Indicate successful add
 		}
 		
 		return itemAdded;
@@ -58,8 +65,7 @@ public class Container extends Item
 	
 		if(this.items.contains(item))             // Make sure that the Container is holding the item
 		{	this.massContained -= item.getMass(); // Remove mass of Item to be Removed from Container
-			this.items.remove(item);              // Remove item from list of container's items
-			item.setLocation(null);               // Set item's location to null
+			this.items.remove(item);             // Remove item from list of container's items
 			itemRemoved = true;                   // Indicate Item's successful removal
 		}
 		return itemRemoved;
@@ -95,20 +101,50 @@ public class Container extends Item
 	}
 	
 	// Description of items in list form (one per line) with articles included
-	public String getItemDescriptions()
-	{	String listAsString = null;
-		String beingVerb = " is";   // Being verb (default: singular)
+	public String getListedItems()
+	{	String listAsString = "";
+		
+		if(items.size() > 0)
+			listAsString = "The " + this.itemName + " contains:\n";
 		
 		for(int i = 0; i < items.size(); i++)
-		{	// Check whether item is singular or plural
-			if(items.get(i).isPlural()) // Check whether item is plural
-				beingVerb = " are";     // Set being verb for plural item
-			
-			// Add item with article and verb to list of items
-			listAsString += items.get(i).getNameWithArticle() + beingVerb + " here\n";
+		{		// Add item with article and verb to list of items
+			listAsString += "   " + items.get(i).getNameWithArticle() + "\n";
 		}
 		
 		return listAsString;
+	}
+	
+	// Get more detailed item descriptions in sentence form
+		public String getItemDescriptions()
+		{	String message = null;
+		
+			if(this.items.size() > 0)
+			{	for(int i = 0; i < items.size(); i++)
+					message += " " + items.get(i).getItemDescription();
+			}
+			else
+				message = "";
+		
+			return message;		
+		}
+	
+	// ========================================================================== Look for items in Container
+	public Item getItemFromContainer(String itemName)
+	{	Item item = null;
+		
+		// make sure itemName is in standard form
+		itemName = itemName.trim().toLowerCase();
+	
+		// search items for item with itemName
+		for(int i = 0; i < this.items.size(); i++)
+		{	item = this.items.get(i);
+			if(!(item.getName()).matches(itemName)) // or alternate name, set it to null
+				item = null;
+		}
+	
+		return item;
+		
 	}
 	
 	// ---------------------------------------- Open or Close the Container
@@ -170,7 +206,10 @@ public class Container extends Item
 	
 	public String open()
 	{	String message = null;
-		// IMPLEMENT
+		message = "The " + this.itemName + " is now open";
+		this.closed = false;
 		return message;		
 	}
+	
+	
 } // end Container
