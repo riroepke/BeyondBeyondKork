@@ -83,7 +83,7 @@ public class FxClassForThisGame extends Application {
 				//the userinput will be editable
 				userInput.setEditable(true);
 				//set the size of the text box
-				userInput.setPrefSize(600,200);
+				userInput.setPrefSize(200,100);
 				//let the text be editable
 				userInput.setEditable(true);
 				
@@ -129,9 +129,9 @@ public class FxClassForThisGame extends Application {
 				ImageView mapPic = new ImageView(new Image("file:Images/Mappic.png"));
 				//change the dimensions of the image
 				mapPic.setFitHeight(800/2);
-				mapPic.setFitWidth(800/4);
+				mapPic.setFitWidth(800/2);
 				rvBox.getChildren().add(mapPic);
-				//make a label to go over the items
+				/*//make a label to go over the items
 				Label itemHeader = new Label("Item List :");
 				itemHeader.setFont(Font.font("Times New Roman",FontWeight.BOLD,20));
 				rvBox.getChildren().add(itemHeader);
@@ -142,8 +142,8 @@ public class FxClassForThisGame extends Application {
 				//use for each loop to add all the items to rvbox
 				for(Label itemlists : itemList )
 				{
-				rvBox.getChildren().add(itemlists);
-				}
+				rvBox.getChildren().add(itemlists);*/
+				
 				return rvBox;
 			}
 		
@@ -160,5 +160,3 @@ public class FxClassForThisGame extends Application {
 			//must have launch when using fx in eclipse
 			Application.launch(args);
 		}
-
-}
