@@ -1,10 +1,14 @@
 package commands;
 
+import java.util.ArrayList;
+
 public class Action
 {	// ------------------------------------------------------ Data Fields Visible to Subclasses
 	protected String inputID;    // identification string
 	protected String altInputID; // alternate identification string
 								 // (e.i. inputID = "telephone"; altInputID = "phone")
+	
+	protected static ArrayList<Action> comprehensiveActionList = new ArrayList<>();
 	
 	// ------------------------------------------------------ Private Data Fields
 	private boolean object;                // Determines whether or not action requires object
@@ -18,15 +22,23 @@ public class Action
 		
 		this.object = object;
 		this.objectWithPreposition = objectWithPreposition;
+
+		comprehensiveActionList.add(this);
 	}
 	
 	// Two possible identification strings
 	public Action(String inputID, String altInputID, boolean object, boolean objectWithPreposition)
-	{	this.inputID = inputID;
+	{	this(inputID, object, objectWithPreposition);
 		this.altInputID = altInputID;
-		
-		this.object = object;
-		this.objectWithPreposition = objectWithPreposition;
+	}
+	
+	// ------------------------------------------------------- Get ID and alt ID
+	public String getID()
+	{	return this.inputID;			
+	}
+	
+	public String getAltID()
+	{	return this.altInputID;		
 	}
 	
 	// ------------------------------------------------------- Get properties
@@ -47,6 +59,21 @@ public class Action
 			matchesInput = true;
 	
 		return matchesInput;
+	}
+	
+	// Get comprehensive list of all actions
+	public static ArrayList<Action> getComprehensiveActionList()
+	{	return comprehensiveActionList;		
+	}
+	
+	// Determine number of occurrences of actions with common inputID
+	public int numberOfActions(String inputID)
+	{	int occurrences = 0;
+		for(int i = 0; i < comprehensiveActionList.size(); i++)
+		{	if(comprehensiveActionList.get(i).matches(inputID))
+				occurrences++;
+		}
+		return occurrences;
 	}
 
 } // end Action
