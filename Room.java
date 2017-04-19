@@ -216,17 +216,14 @@ public class Room
 	{	return this.D; }
 	
 	/*	Place an item in the room */
-	public boolean addItem(Item item)
-	{	boolean taskCompleted = true;    // Need to check this in future
-		this.items.add(item);
-		return taskCompleted;
+	public boolean addItem(Item newItem)
+	{	newItem.location = new Location(this);          // Set location of Item to current Container
+		return this.items.add(newItem);                    // Indicate successful add
 	}
 	
 	/*	Remove item from the room */
 	public boolean removeItem(Item item)
-	{	boolean taskCompleted = true;    // Need to check this in future
-		this.items.remove(item);
-		return taskCompleted;
+	{	return this.items.remove(item);
 	}
 	
 	// ========================================= Description Setters
@@ -240,7 +237,7 @@ public class Room
 	{	this.outsideDescription = outsideDescription;		
 	}
 	
-	// ========================================= Description Getters
+	// =========================================================== Description Getters
 	// Retrieve the Room'ss description as seen from the inside
 	public String getInsideDescription()
 	{	return this.insideDescription;
@@ -251,19 +248,116 @@ public class Room
 	{	return this.outsideDescription;
 	}
 	
+	// List of directions that can be traveled
+	public String getExitList()
+	{	String message = "\nThere are exits ";
+		java.util.ArrayList<String> roomNames = new java.util.ArrayList<>();
+		
+		if(this.N != null)
+			roomNames.add("north ");
+		if(this.NE != null)
+			roomNames.add("northeast ");
+		if(this.E != null)
+			roomNames.add("northeast ");
+		if(this.SE != null)
+			roomNames.add("southeast ");
+		if(this.S != null)
+			roomNames.add("south ");
+		if(this.SW != null)
+			roomNames.add("southwest ");
+		if(this.W != null)
+			roomNames.add("west ");
+		if(this.NW != null)
+			roomNames.add("northwest ");
+		if(this.U != null)
+			roomNames.add("up ");
+		if(this.D != null)
+			roomNames.add("down ");
+		
+		// ------------ Add results to message
+			// Case 1: 0 results
+			if(roomNames.size() == 0)
+				message = "";  // empty message
+			else
+			{	// Case 2: 1 result
+				if(roomNames.size() == 1)
+					message = "\nThere is an exit to the ";
+				// Case 3: 2 or more results
+				else
+					message = "\nThere are exits to the ";
+				
+				for(int i = 0; i < roomNames.size(); i++)
+				{	if(i < roomNames.size() - 1)
+						message += roomNames.get(i) + ", ";
+					else
+					{	if(roomNames.size() > 1)
+							message += "and";
+						message += roomNames.get(i);
+					}
+				}
+			}
+		
+		
+		return message;
+	}
+	
 	// Get Descriptions of Items as a list
-	public String getItemDescriptions()
-	{	String listAsString = null;
+	public String getListedItems()
+	{	String listAsString = "";
 		String beingVerb = " is";
 		
+		// Add each item in Room on the list
 		for(int i = 0; i < items.size(); i++)
 		{	// Check whether item is singular or plural
 			if(items.get(i).isPlural())
 				beingVerb = " are";
 			listAsString += items.get(i).getNameWithArticle() + beingVerb + " here\n";
+			
+			// For every container, list its contents
+			if(items.get(i) instanceof Container)
+				listAsString += ((Container)(items.get(i))).getListedItems();
 		}
 		
 		return listAsString;
+	}
+	
+	// Get more detailed item descriptions in sentence form
+	public String getItemDescriptions()
+	{	String message = "";
+	
+		for(int i = 0; i < items.size(); i++)
+			message += " " + items.get(i).getItemDescription();
+	
+		return message;		
+	}
+	
+	// Determine whether Room contains an item (directly or indirectly)
+	public Item getItemFromRoom(String itemName)
+	{	Item item = null;
+		
+		// make sure itemName is in standard form
+		itemName = itemName.trim().toLowerCase();
+		
+	
+		// search items for item with itemName
+		for(int i = 0; i < this.items.size(); i++)
+		{	item = this.items.get(i);			
+			
+			// If item is not identified by either regular or alternate name, set it to null
+			if(!item.matches(itemName))
+			{	item = null;
+				
+				// if item is a container that is open, search container for the item
+				if(item instanceof Container && ((Container)item).isClosed() == false)
+				{	item = (new Location((Container)item)).findItem(itemName);
+				}
+			}
+			
+			if(item != null) // Break for loop if item has been found
+				break;
+		}
+	
+		return item;
 	}
 	
 } // end Room
