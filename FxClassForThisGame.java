@@ -154,11 +154,11 @@ public class FxClassForThisGame extends Application {
 			
 		
 			
-		/*
+		
 		public static void main(String[] args)
 		{
 			//must have launch when using fx in eclipse
 			Application.launch(args);
-		}*/
+		}
 
 }
