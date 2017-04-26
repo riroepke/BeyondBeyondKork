@@ -2,10 +2,9 @@ package commands;
 
 import java.util.ArrayList;
 
-public class Item implements Constants
+public class Item
 {	// --------------------------------------------- Data Fields
 	protected String itemName, altItemName;
-	protected String outsideDescription;
 	protected String itemDescription;
 	protected String details;
 	protected Location location;
@@ -23,24 +22,9 @@ public class Item implements Constants
 		this.mass = mass;
 	}
 	
-	public Item(String itemName, Location location, int mass, String outsideDescription)
-	{	this(itemName, location, mass);
-		this.outsideDescription = outsideDescription;
-	}
-	
 	public Item(String itemName, String altItemName, Location location, int mass)
 	{	this(itemName, location, mass);
 		this.altItemName  = altItemName;
-	}
-	
-	public Item(String itemName, String altItemName, Location location, int mass, String outsideDescription)
-	{	this(itemName, location, mass, outsideDescription);
-		this.altItemName = altItemName;
-	}
-	
-	public Item(String itemName, String altItemName, Location location, int mass, String outsideDescription, String details)
-	{	this(itemName, altItemName, location, mass, outsideDescription);
-		this.details = details;
 	}
 	
 	// -------------------------------------------- Getter & Setters
@@ -83,14 +67,6 @@ public class Item implements Constants
 	}
 	
 	// ============================================================ Description Getters & Setters
-	// --------------------- Outside Description
-	public void setOutsideDescription(String outsideDescription)
-	{	this.outsideDescription = outsideDescription;		
-	}
-	
-	public String getOutsideDescription()
-	{	return this.outsideDescription;		
-	}
 	
 	// --------------------- Item Description (used when listing items in a room)
 	public void setItemDescription(String itemDescription)
