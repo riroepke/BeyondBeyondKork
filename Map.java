@@ -1,6 +1,10 @@
-/*	Authors:		Peter Bearden, Ruth Bearden
- *  Date:			3/4/17
- *  Project:		Adventure Game Creation Commands
+/*	Class:       CS 1302/XLS
+ * 	Term:        Spring 2017
+ *  Instructor:  Monisha Verma
+ *  Assignment:  Project 2
+ */	
+
+/*	Authors: Rebekah Roepke and Ruth Bearden
  */
 
 package commands;
@@ -35,5 +39,9 @@ public class Map
 	
 	public void addRoom(String roomName)
 	{	this.rooms.add(new Room(roomName));
+	}
+	
+	public void addRoom(Room room)
+	{	this.rooms.add(room);
 	}
 } // end Map
