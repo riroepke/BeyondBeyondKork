@@ -9,9 +9,11 @@
 
 package commands;
 
+import javafx.scene.image.Image;
+
 public class Game
-{	private Map map;                                               // map is a list of all rooms in game
-	private Room ValleyBottom, InsideCave, DogRoom, TreasureRoom;  // declare rooms as global variables
+{	private Room ValleyBottom, InsideCave, DogRoom,                // declare rooms as global variables
+				 TreasureRoom, CaveEntrance;
 	private Person self;                                           // declare player as a person (self)
 	private Parser input;                                          // parser to get input from user
 	private String actionInput;                                    // string for action the player to take (1st word on input line)
@@ -61,7 +63,6 @@ public class Game
 						  EAT = new Action("eat"),						  //	eat biscuit
 						  FEED = new Action("feed"),					  //	feed dog biscuit   (or feed biscuit to dog)
 						  HIT = new Action("hit"),						  //	hit mirror with sword
-						  KILL = new Action("kill"),					  //	kill dog with sword
 						  OPEN = new Action("open"),                      //	open chest
 						  CLOSE = new Action("close"),					  //	close chest
 						  INVENTORY = new Action("inventory", "i");		  //	inventory
@@ -86,9 +87,7 @@ public class Game
 				   	    CHEST = new Container("chest", REPOSITORY, 50, 140, "The chest is closed");  // Chest is a container that holds up to 50 units of mass
 
 	public Game()
-	{	map = new Map("KORK");
-		
-		// ================================================================ Create Map by creating Rooms and adding items to the rooms
+	{	// ================================================================ Create Map by creating Rooms and adding items to the rooms
 		// Constructor format: Room room = new Room([name], [description from inside the room], [description from outside the room]);
 	
 		ValleyBottom = new Room("Valley Bottom", "You are at the bottom of a steep valley.", "the cave's entrance");
@@ -107,10 +106,16 @@ public class Game
 				CHEST.setClosable(true);
 				CHEST.setOpenable(true);
 				
+			ValleyBottom.setRoomImage("file:images/valleyBottom.png");
+				
 			ValleyBottom.setOutside(true);
 		
-				map.addRoom(ValleyBottom); //add to map
-		
+		CaveEntrance = new Room("Cave Entrance", "You are just inside a cave. Sunshine comes from the entrance, but the lighting is dim.", "the cave's entrance");
+			CaveEntrance.setOutside(true);
+			
+			CaveEntrance.setRoomImage("file:images/caveEntrance.png");
+			
+				
 		InsideCave = new Room("Cave","You are inside the cave.", "a dark, dank, cave room");
 			InsideCave.addItem(LANTERN);
 				LANTERN.setItemDescription("Light eminates from a portable lantern.");
@@ -121,13 +126,13 @@ public class Game
 				DOGTREAT.setDetails("The biscuit is hard as a rock.");
 				DOGTREAT.addActions(TAKE, EAT);
 		
-				map.addRoom(InsideCave); //add to map
+			InsideCave.setRoomImage("file:images/insideCave.png");
 		
 		DogRoom = new Room("Dog Room","You just entered a room with stone walls and floor.", " a dark room with a dog leaning against the wall.");
 			DogRoom.addItem(DOG);
 				DOG.setItemDescription("A dog sits against the wall.");
 				DOG.setDetails("The dog seems to be a Rottweiller");
-				DOG.addActions(FEED, HIT, KILL);
+				DOG.addActions(FEED, HIT);
 				
 			DogRoom.addItem(SWORD);
 				SWORD.setItemDescription("There is a sword here.");
@@ -142,9 +147,8 @@ public class Game
 				MIRROR.setClosable(false);
 				MIRROR.open();
 				MIRROR.setOpenable(false);
-				
-				
-			map.addRoom(DogRoom); //add to map
+
+			DogRoom.setRoomImage("file:images/dogRoom.png");
 		
 		TreasureRoom = new Room("Treasure Room","This is the treasure room. What are you waiting for? Take what you came for."," gold sparkles in the dim lighting");
 		
@@ -163,13 +167,14 @@ public class Game
 				SILVER_CROWN.setDetails("The crown has been recently polished.");
 				SILVER_CROWN.addActions(TAKE, SWING, EXAMINE, MOVE);
 			
-			map.addRoom(TreasureRoom);
+			TreasureRoom.setRoomImage("file:images/treasureRoom.png");
 
 		
 		// Player
 		self = new Person("Yourself", new Location(ValleyBottom), 100, 100);
 		
 		// Preset paths
+		CaveEntrance.setPathN(InsideCave);
 		InsideCave.setN(DogRoom);
 		DogRoom.setN(InsideCave);
 			
@@ -184,8 +189,7 @@ public class Game
 		// Get input from user
 		input.getLine();
 		actionInput = input.getWord(0);
-		
-		
+	
 		// Make sure there is light in the room
 		if(self.getLocation().hasLight() == false && self.getItemFromContainer("lantern") == null)
 		{	message = Definitions.TOO_DARK;	// If the room is not lighted with sunlight or a lantern, bad things can happen		
@@ -195,8 +199,10 @@ public class Game
 				gameStatus = Definitions.PLAYER_DIED;
 		}
 		
+		
 		// Note: if the room is dark, the player will move anyway unless eaten first
 		// Check for direction input
+		// ----------------------------------------------------------------------------------------- Travel in one of 10 directions
 		if(N.matches(actionInput)) {message = self.n();}
 		
 		else if(NE.matches(actionInput)) {message = self.ne();}
@@ -217,11 +223,10 @@ public class Game
 		
 		else if(D.matches(actionInput)) {message = self.d();}
 		
-		else if(self.getLocation().hasLight() == false && self.getItemFromContainer("lantern") == null)
-		{	if(gameStatus == Definitions.PLAYER_DIED)
-				message = "A famished dark-loving monster mistakes you for its lunch.";
-			else
-				message = "You hear something snuffling around in the dark";
+		// ----------------------------------------------------------------------------------------- Make sure the room is lighted before proceeding
+		else if(gameStatus == Definitions.PLAYER_DIED
+				|| self.getLocation().hasLight() == false && self.getItemFromContainer("lantern") == null)
+		{	// Do nothing else besides move when it is dark
 		}
 		
 		// ----------------------------------------------------------------------------------------- Get a description of surroundings
@@ -250,6 +255,7 @@ public class Game
 				message = Definitions.UNSATISFIED_ACTION(DROP);
 		}
 		
+		// ----------------------------------------------------------------------------------------- Put an item somewhere
 		else if(input.numberOfWords() == 4 && PUT.matches(actionInput) && input.getWord(2).equals("in"))
 		{	Item itemToPut = self.getItemFromContainer(input.getWord(1));
 			Item container = self.getItemFromContainer(input.getWord(3));
@@ -292,7 +298,7 @@ public class Game
 					{	// Move item and print result: a cave entrance is revealed
 						message = item.move("a cave entrance to the north");
 						ROCK.setItemDescription("There is a large rock here.");
-						ValleyBottom.setPathN(InsideCave);	             // < ============================================================================ Event: Move rock
+						ValleyBottom.setPathN(CaveEntrance);	             // < ============================================================================ Event: Move rock
 						self.setPoints(self.getPoints() + 10);           //  Add 10 points to player score
 					}
 					else
@@ -364,7 +370,7 @@ public class Game
 					{	// kills dog immediately
 						DOG.setItemDescription("There is a dead dog here.");
 						DOG.setDetails("The dog is definitely dead.");
-						DOG.removeActions(FEED, HIT, KILL);
+						DOG.removeActions(FEED, HIT);
 						message = "The dog dies.";
 					}
 					else
@@ -378,6 +384,7 @@ public class Game
 				
 		}
 		
+		// ----------------------------------------------------------------------------------------- Feed an item to an entity
 		else if(FEED.matches(actionInput))
 		{	if(input.numberOfWords() == 3 || (input.numberOfWords() == 4 && input.getWord(2).equals("to")))
 			{	int indexItemToGetFed = 1, indexItemToFeed = 1;	
@@ -388,11 +395,10 @@ public class Game
 					indexItemToGetFed = 3;    // Example: feed biscuit to dog
 					
 			
-				Item itemToGetFed = self.getLocation().findItem(input.getWord(indexItemToGetFed));
-				Item itemToFeed = self.getItemFromContainer(input.getWord(indexItemToFeed));
+				Item itemToGetFed = self.getLocation().findItem(input.getWord(indexItemToGetFed)); // Get item from location
+				Item itemToFeed = self.getItemFromContainer(input.getWord(indexItemToFeed));       // Get item form possession
 				
-				// Check for itemToGetFed in personal possession
-				if(itemToGetFed == null)
+				if(itemToGetFed == null)             // Check for itemToGetFed in personal possession if not found in location
 					itemToGetFed = self.getItemFromContainer(input.getWord(indexItemToFeed));
 			
 				if(itemToGetFed == null)           // The item player wants to feed is not present
@@ -422,6 +428,7 @@ public class Game
 				message = Definitions.UNSATISFIED_ACTION(EAT);
 		}
 		
+		// ----------------------------------------------------------------------------------------- Eat something
 		else if(EAT.matches(actionInput))
 		{	if(input.numberOfWords() == 2)
 				message = self.eat(input.getWord(1));
@@ -429,6 +436,7 @@ public class Game
 				message = Definitions.UNSATISFIED_ACTION(EAT);
 		}
 		
+		// ----------------------------------------------------------------------------------------- Drink something
 		else if(DRINK.matches(actionInput))
 		{	if(input.numberOfWords() == 2)
 				message = self.drink(input.getWord(1));
@@ -437,6 +445,7 @@ public class Game
 			
 		}
 		
+		// ----------------------------------------------------------------------------------------- Examine an item
 		else if(EXAMINE.matches(actionInput))
 		{	if(input.numberOfWords() == 2)
 				message = self.examine(input.getWord(1));
@@ -444,6 +453,7 @@ public class Game
 				message = Definitions.UNSATISFIED_ACTION(EXAMINE);
 		}
 		
+		// ----------------------------------------------------------------------------------------- Read something
 		else if(READ.matches(actionInput))
 		{	if(input.numberOfWords() == 2)
 			{	Item itemToBeRead = self.getLocation().findItem(input.getWord(1));
@@ -461,6 +471,7 @@ public class Game
 				message = Definitions.UNKOWN_PHRASE;
 		}
 		
+		// ----------------------------------------------------------------------------------------- Open a container
 		else if(OPEN.matches(actionInput))
 		{	if(input.numberOfWords() == 2)
 			{	Item container = self.getLocation().findItem(input.getWord(1));
@@ -487,9 +498,10 @@ public class Game
 				message = Definitions.UNSATISFIED_ACTION(OPEN);
 		}
 		
+		// ----------------------------------------------------------------------------------------- Close a container
 		else if(CLOSE.matches(actionInput))
 		{	if(input.numberOfWords() == 2)
-			{	Item container = self.getLocation().findItem(input.getWord(1));
+			{	Item container = self.getLocation().findItem(input.getWord(1)); // Get item from location
 			
 				if(container == null)                              // Check for item in player possession
 					container = self.getItemFromContainer(input.getWord(1));
@@ -509,43 +521,65 @@ public class Game
 			}
 			else
 				message = Definitions.UNSATISFIED_ACTION(OPEN);
-				
 		}
 		
+		// ----------------------------------------------------------------------------------------- Jump in the air
 		else if(input.numberOfWords() == 1 && JUMP.matches(actionInput))
 		{	message = Definitions.WHEE;			
 		}
 		
+		// ----------------------------------------------------------------------------------------- Take inventory of items in possession
 		else if(INVENTORY.matches(actionInput))
 		{	message = self.inventory();
 		}
 		
+		// ----------------------------------------------------------------------------------------- Phrase is invalid
 		else
 			message = Definitions.UNKOWN_PHRASE_WITH_SARCASM;
+		
+		// ==================================== Change message if player has died
+		if(gameStatus == Definitions.PLAYER_DIED
+				|| self.getLocation().hasLight() == false && self.getItemFromContainer("lantern") == null)
+		{	if(gameStatus == Definitions.PLAYER_DIED)
+				message = Definitions.TOO_DARK + "\nA famished dark-loving monster mistakes you for its lunch.";
+			else
+				message = Definitions.TOO_DARK + "\nYou hear something snuffling around in the dark";
+		}
 		
 		
 		// =============== Game-Winning Condition: The Chest contains the diamond, pelican statue, and silver crown and has been closed
 		if(CHEST.getItems().contains(DIAMOND) && CHEST.getItems().contains(PELICAN_STATUE) && CHEST.getItems().contains(SILVER_CROWN)
 				&& CHEST.isClosed())
-		{	this.gameStatus = Definitions.GAME_WON;
-		}
-		
+			this.gameStatus = Definitions.GAME_WON;
 		
 		
 		
 		return message;
 	} // run()
 	
+	// Return the game statue (in progress, lost, won)
 	public int getGameStatus()
 	{	return this.gameStatus;	
 	}
 	
+	// Return welcome message for game
 	public String getWelcomeMessage()
 	{	return this.welcomeMessage;		
 	}
 	
-	public String exit(String exitMessage)
-	{	return exitMessage;		
+	// Return an image overlay for marking the current room
+	public Image getRoomMarker()
+	{	Image overlay = null;
+		Room currentRoom = null;
+	
+		if(self.getLocation().isRoom())
+			currentRoom = self.getLocation().getRoom();
+		else
+			currentRoom = self.getLocation().getContainer().getLocation().getRoom();
+		
+		overlay = currentRoom.getRoomImage();
+	
+		return overlay;
 	}
 	
 } // end class Game
