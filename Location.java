@@ -59,17 +59,7 @@ public class Location
 		
 		return message;
 	}
-	
-	public String getOutsideDescription()
-	{	String message = null;
-		
-		if(this.isRoom())
-			message = this.getRoom().getOutsideDescription();
-		else if(this.isContainer())
-			message = this.getContainer().getOutsideDescription();
-		
-		return message;
-	}
+
 	
 	public String getBearings()
 	{	String message = null;
@@ -116,6 +106,14 @@ public class Location
 		return item;
 	}
 	
+	// ============================== Determine whether the Room or Container is lit
+	public boolean hasLight()
+	{	if(this.isRoom())
+			return this.getRoom().hasLight();
+		else
+			return this.getContainer().hasLight();		
+	}
+	
 	// ============================== Generic methods for adding and removing items
 	public boolean addItem(Item newItem)
 	{	boolean itemAdded = false;
@@ -134,7 +132,7 @@ public class Location
 		if(this.isRoom())
 			itemRemoved = getRoom().removeItem(item);
 		else
-			itemRemoved = getContainer().addItem(item);
+			itemRemoved = getContainer().removeItem(item);
 		
 		return itemRemoved;
 	}
