@@ -1,3 +1,12 @@
+/*	Class:       CS 1302/XLS
+ * 	Term:        Spring 2017
+ *  Instructor:  Monisha Verma
+ *  Assignment:  Project 2
+ */	
+
+/*	Authors: Rebekah Roepke and Ruth Bearden
+ */
+
 package commands;
 
 import java.util.ArrayList;
@@ -13,8 +22,11 @@ public class Container extends Item
 	private boolean closed = true;                        // item is open or closed (default closed)
 	private boolean canClose = true;                      // item can or cannot be closed (default can)
 	private boolean canOpen = true;                       // item can or cannot be opened (default can)
+	private boolean locked = false;
 	private Item key;                                         // key item
 	private ArrayList<Action> keyActions = new ArrayList<>(); // list of actions done to unlock a box
+	
+	private boolean outside = false;                      // marks whether or not the container is located outside
 	
 	// ------------------------------------------------------- Constructors
 	public Container(String itemName, Location location, int mass, int maxCapacity)
@@ -22,8 +34,8 @@ public class Container extends Item
 		this.maxCapacity = maxCapacity;
 	}
 	
-	public Container(String itemName, Location location, int mass, int maxCapacity, String outsideDescription, String insideDescription)
-	{	super(itemName, location, mass, outsideDescription);
+	public Container(String itemName, Location location, int mass, int maxCapacity, String insideDescription)
+	{	super(itemName, location, mass);
 		this.maxCapacity = maxCapacity;
 		this.insideDescription = insideDescription;
 	}
@@ -33,14 +45,14 @@ public class Container extends Item
 		this.maxCapacity = maxCapacity;
 	}
 	
-	public Container(String itemName, String altItemName, Location location, int mass, int maxCapacity, String outsideDescription, String insideDescription)
-	{	super(itemName, altItemName, location, mass, outsideDescription);
+	public Container(String itemName, String altItemName, Location location, int mass, int maxCapacity, String insideDescription)
+	{	super(itemName, altItemName, location, mass);
 		this.maxCapacity = maxCapacity;
 		this.insideDescription = insideDescription;
 	}
 	
 	// ------------------------------------------------------- Getters & Setters
-	// 
+	// add an item to this list of those contained in the container
 	public boolean addItem(Item newItem)
 	{	boolean itemAdded = false;
 		int currentMassHeld = 0;
@@ -52,6 +64,7 @@ public class Container extends Item
 		// ------- Add item to container
 		if(currentMassHeld + newItem.getMass() <= this.maxCapacity) // Ensure that Container can hold item
 		{	this.massContained += newItem.getMass();                // Add mass of added Item to Container
+			this.mass += this.massContained;                        // Add to total container mass
 			this.items.add(newItem);                           		// Add new Item to Container
 			newItem.location = new Location(this);             		// Set location of Item to current Container
 			itemAdded = true;                                  		// Indicate successful add
@@ -65,7 +78,8 @@ public class Container extends Item
 	
 		if(this.items.contains(item))             // Make sure that the Container is holding the item
 		{	this.massContained -= item.getMass(); // Remove mass of Item to be Removed from Container
-			this.items.remove(item);             // Remove item from list of container's items
+			this.mass -= item.getMass();          // Remove mass from Container's total mass
+			this.items.remove(item);              // Remove item from list of container's items
 			itemRemoved = true;                   // Indicate Item's successful removal
 		}
 		return itemRemoved;
@@ -137,10 +151,22 @@ public class Container extends Item
 		itemName = itemName.trim().toLowerCase();
 	
 		// search items for item with itemName
-		for(int i = 0; i < this.items.size(); i++)
+		for(int i = 0; i < this.items.size() && item == null; i++)
 		{	item = this.items.get(i);
-			if(!(item.getName()).matches(itemName)) // or alternate name, set it to null
-				item = null;
+		
+			// If item is not identified by either regular or alternate name, set it to null
+			if(!item.matches(itemName))
+			{	// if item is a container that is open, search container for the item
+				if(item instanceof Container && ((Container)item).isClosed() == false)
+				{	item = ((Container)item).getItemFromContainer(itemName);
+				}
+				
+				if(item != null && !item.matches(itemName))
+					item = null;
+			}
+		
+			if(item != null && !(item.matches(itemName))) // or alternate name
+				item = null; // if neither match, set item to null
 		}
 	
 		return item;
@@ -152,10 +178,17 @@ public class Container extends Item
 	public void lock(Item key, Action... actionList)
 	{	if(this.canOpen == true)  // Box cannot be opened until actions are completed with key
 			this.canOpen = false;
+		
+		this.locked = true;
 	
 		for(Action action: actionList) // Add times in actionList to keyActions
 			if(this.keyActions.contains(action) == false) // Make sure keyActions does not already contain action
 				this.keyActions.add(action);
+	}
+	
+	// Get whether or not the container is locked
+	public boolean isLocked()
+	{	return this.locked;		
 	}
 	
 	// Unlock the container
@@ -163,9 +196,19 @@ public class Container extends Item
 	{	this.canOpen = true;		
 	}
 	
+	// Set whether or not the player can close the container
+	public void setClosable(boolean closable)
+	{	this.canClose = closable;		
+	}
+	
 	// Allow the player to close the container
 	public boolean canClose()
 	{	return this.canClose;		
+	}
+	
+	// Set whether or not the player can open the container
+	public void setOpenable(boolean openable)
+	{	this.canClose = openable;		
 	}
 	
 	// Allow the player to open the container (no key needed)
@@ -206,9 +249,19 @@ public class Container extends Item
 	
 	public String open()
 	{	String message = null;
-		message = "The " + this.itemName + " is now open";
+		message = Definitions.CONTAINER_OPEN(this.getName());
 		this.closed = false;
 		return message;		
+	}
+	
+	// ---------------------------------------- Determine whether there is light in the container
+	// Container is lit if either the containing room is lit or it there is a lantern in the container
+	public boolean hasLight()
+	{	boolean containerHasLight = false;
+		if(this.location.isRoom())
+			if(this.location.getRoom().hasLight())
+				containerHasLight = true;
+		return containerHasLight;
 	}
 	
 	
