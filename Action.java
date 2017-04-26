@@ -1,3 +1,12 @@
+/*	Class:       CS 1302/XLS
+ * 	Term:        Spring 2017
+ *  Instructor:  Monisha Verma
+ *  Assignment:  Project 2
+ */	
+
+/*	Authors: Rebekah Roepke and Ruth Bearden
+ */
+
 package commands;
 
 import java.util.ArrayList;
@@ -7,28 +16,18 @@ public class Action
 	protected String inputID;    // identification string
 	protected String altInputID; // alternate identification string
 								 // (e.i. inputID = "telephone"; altInputID = "phone")
-	
 	protected static ArrayList<Action> comprehensiveActionList = new ArrayList<>();
-	
-	// ------------------------------------------------------ Private Data Fields
-	private boolean object;                // Determines whether or not action requires object
-	private boolean objectWithPreposition; // Determines whether or not action requires object
-	                                       //     and prepositional phrase
 
 	// ------------------------------------------------------ Constructors
 	// Only one identification strings
-	public Action(String inputID, boolean object, boolean objectWithPreposition)
+	public Action(String inputID)
 	{	this.inputID = inputID;
-		
-		this.object = object;
-		this.objectWithPreposition = objectWithPreposition;
-
 		comprehensiveActionList.add(this);
 	}
 	
 	// Two possible identification strings
-	public Action(String inputID, String altInputID, boolean object, boolean objectWithPreposition)
-	{	this(inputID, object, objectWithPreposition);
+	public Action(String inputID, String altInputID)
+	{	this(inputID);
 		this.altInputID = altInputID;
 	}
 	
@@ -39,15 +38,6 @@ public class Action
 	
 	public String getAltID()
 	{	return this.altInputID;		
-	}
-	
-	// ------------------------------------------------------- Get properties
-	public boolean takesObject() // Verb takes an object (2 words)
-	{	return this.object;		
-	}
-	
-	public boolean takesObjectWithPreposition() // Verb takes an object with
-	{	return this.objectWithPreposition;		// prepositional phrase (4 words)
 	}
 	
 	// ------------------------------------------------------- Other methods
