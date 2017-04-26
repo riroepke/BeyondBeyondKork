@@ -91,11 +91,9 @@ public class Container extends Item
 	}
 	
 	// Set the maximum mass the container can hold
-	public void setMaxMass(int mass) throws NegativeMassException
+	public void setMaxMass(int mass)
 	{	if(mass >= 0) // Ensure maxCapacity is not negative
-			this.maxCapacity = mass;
-	else
-		throw new NegativeMassException();		
+			this.maxCapacity = mass;		
 	}
 	
 	// Get the current mass the container is holding
