@@ -1,8 +1,17 @@
+/*	Class:       CS 1302/XLS
+ * 	Term:        Spring 2017
+ *  Instructor:  Monisha Verma
+ *  Assignment:  Project 2
+ */	
+
+/*	Authors: Rebekah Roepke and Ruth Bearden
+ */
+
 package commands;
 
 import java.util.Scanner;
 
-public class Parser extends Rules
+public class Parser
 {	private String[] args;                                    // List of words in input line
 	private String inputString;                                      // Scanner object for getting user input
 
