@@ -1,3 +1,12 @@
+/*	Class:       CS 1302/XLS
+ * 	Term:        Spring 2017
+ *  Instructor:  Monisha Verma
+ *  Assignment:  Project 2
+ */	
+
+/*	Authors: Rebekah Roepke and Ruth Bearden
+ */
+
 package commands;
 
 /*  Note: Person class defines all actions that can be done only by number one: the Self person
@@ -26,7 +35,7 @@ public class Person extends Container
 		/* Check all possible reasons that would prevent person from moving to given room */
 		// Check that destination is not null (null signifies dead end)
 		if(destination != null)
-		{	this.location = newLocation;  // Assumes person is in Room (not Container); checked by other methods
+		{	this.location = newLocation;    // Assumes person is in Room (not Container); checked by other methods
 			message = look(newLocation);
 		}
 		else
@@ -227,14 +236,41 @@ public class Person extends Container
 		
 		// =================================== Look in current room or in room specified
 		public String look()
-		{	return look(this.location);	
+		{	return look(this.location);
 		}
 		
 		public String look(Location location)
-		{	return "\n" + location.getName() + "\n"
-						+ location.getInsideDescription()
-	                    + location.getItemDescriptions()	
-						+ location.getBearings();
+		{	if(this.getLocation().hasLight() || this.getItemFromContainer("lantern") != null)			
+				return "\n" + location.getName() + "\n"
+							+ location.getInsideDescription()
+							+ location.getItemDescriptions()
+							+ location.getBearings();
+			else
+				return Definitions.TOO_DARK;
+		}
+		
+		// ==================================== Look inside a container
+		public String lookIn(String itemName)
+		{	String message = null;
+			Item item = this.getLocation().findItem(itemName);
+			
+			if(item == null)
+				item = this.getItemFromContainer(itemName);
+		
+			if(item == null)
+				message = Definitions.ITEM_NOT_FOUND;
+			else if(item instanceof Container)
+			{	if(((Container)item).isClosed()) // ------------------- The container is closed; items are not visible
+					message = Definitions.CONTAINER_CLOSED(itemName);
+				else if(((Container)item).items.size() == 0) // ------- The container is empty; no items available
+					message = Definitions.CONTAINER_EMPTY(itemName);
+				else  // ---------------------------------------------- The container is open; list items
+					message = ((Container)item).getListedItems();
+			}
+			else
+				message = Definitions.NO_CAN_DO("look in");
+		
+			return message;
 		}
 		
 		// =============================================================================================== Take an object
@@ -243,16 +279,22 @@ public class Person extends Container
 			Item item = this.location.findItem(itemName); // null if item not found
 			Location prevItemLocation;
 			
+			if(item == null)                             // look for item in player possession
+				item = this.getItemFromContainer(itemName);
+			
 			if(item != null && item.hasAction("take"))   // make sure that room (or open container in room) contains item
-			{	prevItemLocation = item.getLocation();   // story previous item location
+			{	if(this.getItemFromContainer(itemName) == null)				
+				{	prevItemLocation = item.getLocation();   // story previous item location
 				
-				if(this.addItem(item))                   // add item to person's items list (false if item exceeds remaining weight limit)
-				{	prevItemLocation.removeItem(item);   // remove item from previous location
-					message = Definitions.TAKEN;         // notify the player that item has been taken
+					if(this.addItem(item))                   // add item to person's items list (false if item exceeds remaining weight limit)
+					{	prevItemLocation.removeItem(item);   // remove item from previous location
+						message = Definitions.TAKEN;         // notify the player that item has been taken
+					}
+					else
+						message = Definitions.LOAD_TOO_HEAVY;// notify player that item causes weight limit on person to be exceeded
 				}
 				else
-					message = Definitions.LOAD_TOO_HEAVY;// notify player that item causes weight limit on person to be exceeded
-				
+					message = Definitions.ALREADY_TAKEN;
 			}
 			else if(item != null && !item.hasAction("take"))// --------------------- case 1: item found but not take-able
 				message = Definitions.CANNOT_TAKE_ITEM; // warn player that the item couldn't be taken
@@ -266,10 +308,13 @@ public class Person extends Container
 		public String drop(String itemName)
 		{	String message = null;
 			Item item = this.getItemFromContainer(itemName);
+			Location previousLocation;
 			
 			if(item != null && item.hasAction("take")) // if an item can be taken, it can be dropped
-			{	this.getLocation().addItem(item);
-				this.removeItem(item);
+			{	previousLocation = item.getLocation();
+				this.getLocation().addItem(item);
+				previousLocation.removeItem(item);
+				
 				message = Definitions.DROPPED;
 			}
 			else
@@ -277,6 +322,23 @@ public class Person extends Container
 		
 			return message;			
 		} // end drop()
+		
+		// ============================================================================================== Put an object into a container
+		public String put(Item itemToPut, Container container)
+		{	String message = null;
+			
+			// If player is holding chest, make sure the item does not cause player weight limit to be exceeded
+			if(this == container && (container.getMass() + itemToPut.getMass()) > this.maxCapacity)
+				message = Definitions.LOAD_TOO_HEAVY;
+			else if(container.addItem(itemToPut))      // Add item and check that item can be added
+			{	this.removeItem(itemToPut);
+				message = Definitions.DONE;
+			}
+			else                                  // The container was too full
+				message = Definitions.TOO_FULL;
+			
+			return message;			
+		}
 		
 		// Take inventory: list the items the person is carrying
 		public String inventory()
@@ -293,6 +355,57 @@ public class Person extends Container
 			return message;
 		}
 		
+		// Eat an item
+		public String eat(String itemToEat)
+		{	String message = null;
+			Item item = this.getItemFromContainer(itemToEat); // Try to get item from inventory
 		
+			if(item != null)
+			{	if(item.hasAction("eat"))                // Check that the item is human-edible
+				{	item.setLocation(null);              // Item is GONE! 
+					message = Definitions.THAT_WAS_GOOD; // Notify player
+				}
+				else
+					message = Definitions.SERIOUSLY;
+			}
+			else
+				message = Definitions.CANNOT_EAT_ITEM;
+		
+			return message;
+		}
+		
+		// Drink an item
+		public String drink(String itemToDrink)
+		{	String message = null;
+			Item item = this.getItemFromContainer(itemToDrink); // Try to get item from inventory
+			
+			if(item != null)  // player must have item
+			{	if(item.hasAction("eat"))
+				{	item.setLocation(null);    // Item is GONE!
+					message = Definitions.THAT_WAS_GOOD;
+				}
+				else
+					message = Definitions.NO_CAN_DO("drink");
+			}
+			else
+				message = Definitions.ITEM_NOT_IN_POSSESSION;
+		
+			return message;			
+		}
+		
+		public String examine(String itemName)
+		{	String message = null;
+			Item item = null;
+		
+			if((item = this.getLocation().findItem(itemName)) != null)
+			{	message = item.getDetails();
+			}
+			else if((item = this.getItemFromContainer(itemName)) != null)
+			{	message = item.getDetails();				
+			}
+			else
+				message = Definitions.ITEM_NOT_FOUND;
+			return message;
+		}
 	
 } // end class Person
