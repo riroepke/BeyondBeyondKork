@@ -1,6 +1,10 @@
-/*	Authors:		Peter Bearden, Ruth Bearden
- *  Date:			3/4/17
- *  Project:		Adventure Game Creation Commands
+/*	Class:       CS 1302/XLS
+ * 	Term:        Spring 2017
+ *  Instructor:  Monisha Verma
+ *  Assignment:  Project 2
+ */	
+
+/*	Authors: Rebekah Roepke and Ruth Bearden
  */
 
 package commands;
@@ -12,6 +16,8 @@ public class Room
 	private Room N, NE, E, SE, S, SW, W, NW, U, D; // Rooms in every direction
 	private String roomName, insideDescription, outsideDescription;
 	private ArrayList<Item> items;
+	
+	private boolean outside = false;               // marks whether or not the room is outside
 
 	// --------------------------------------------------- Constructors
 	public Room(String roomName)
@@ -35,6 +41,12 @@ public class Room
 	}
 	
 	// --------------------------------------------------- Setters
+	
+	// Set the position of a room to be outside (lighted automatically) or inside (lighted with lamp)
+	public void setOutside(boolean outside)
+	{	this.outside = outside;
+	}
+	
 	
 	/*	Make a TWO-WAY connection between two rooms. These methods
 	 *  may be used in making a two-way path between two rooms whose
@@ -287,11 +299,11 @@ public class Room
 					message = "\nThere are exits to the ";
 				
 				for(int i = 0; i < roomNames.size(); i++)
-				{	if(i < roomNames.size() - 1)
+				{	if(i < roomNames.size() - 1 && roomNames.size() != 2)
 						message += roomNames.get(i) + ", ";
 					else
 					{	if(roomNames.size() > 1)
-							message += "and";
+							message += "and ";
 						message += roomNames.get(i);
 					}
 				}
@@ -303,12 +315,14 @@ public class Room
 	
 	// Get Descriptions of Items as a list
 	public String getListedItems()
-	{	String listAsString = "";
+	{	String listAsString = null;
 		String beingVerb = " is";
 		
 		// Add each item in Room on the list
 		for(int i = 0; i < items.size(); i++)
-		{	// Check whether item is singular or plural
+		{	listAsString = "";
+			
+			// Check whether item is singular or plural
 			if(items.get(i).isPlural())
 				beingVerb = " are";
 			listAsString += items.get(i).getNameWithArticle() + beingVerb + " here\n";
@@ -327,7 +341,6 @@ public class Room
 	
 		for(int i = 0; i < items.size(); i++)
 			message += " " + items.get(i).getItemDescription();
-	
 		return message;		
 	}
 	
@@ -342,15 +355,16 @@ public class Room
 		// search items for item with itemName
 		for(int i = 0; i < this.items.size(); i++)
 		{	item = this.items.get(i);			
-			
+		
 			// If item is not identified by either regular or alternate name, set it to null
 			if(!item.matches(itemName))
-			{	item = null;
-				
-				// if item is a container that is open, search container for the item
+			{	// if item is a container that is open, search container for the item
 				if(item instanceof Container && ((Container)item).isClosed() == false)
-				{	item = (new Location((Container)item)).findItem(itemName);
+				{	item = ((Container)item).getItemFromContainer(itemName);
 				}
+				
+				if(item != null && !item.matches(itemName))
+					item = null;
 			}
 			
 			if(item != null) // Break for loop if item has been found
@@ -358,6 +372,11 @@ public class Room
 		}
 	
 		return item;
+	}
+	
+	// Determine whether or not there is light in the room
+	public boolean hasLight()
+	{	return (this.outside == true || this.getItemFromRoom("lantern") != null);
 	}
 	
 } // end Room
