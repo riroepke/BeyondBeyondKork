@@ -10,6 +10,8 @@
 package commands;
 
 import java.util.ArrayList;
+import javafx.scene.image.Image;
+import java.io.File;
 
 public class Room
 {	// --------------------------------------------------- Data Fields
@@ -18,6 +20,7 @@ public class Room
 	private ArrayList<Item> items;
 	
 	private boolean outside = false;               // marks whether or not the room is outside
+	private Image roomImage;
 
 	// --------------------------------------------------- Constructors
 	public Room(String roomName)
@@ -40,11 +43,28 @@ public class Room
 	{	return this.items;		
 	}
 	
+	public Image getRoomImage()
+	{	return this.roomImage;
+	}
+	
 	// --------------------------------------------------- Setters
 	
 	// Set the position of a room to be outside (lighted automatically) or inside (lighted with lamp)
 	public void setOutside(boolean outside)
 	{	this.outside = outside;
+	}
+	
+	public boolean setRoomImage(String fileName)
+	{	boolean imageExists = false;
+		
+		File file = new File(fileName);  // check that file exists
+		if(file.exists())
+			imageExists = true;
+		
+		this.roomImage = new Image(fileName);
+		
+		
+		return imageExists;
 	}
 	
 	
